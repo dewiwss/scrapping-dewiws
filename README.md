@@ -1,2 +1,2 @@
-# scrapping-dewiws
-pweb scrapping edit dewiws
+# scraping-detik
+scraping detik dengan node js 
