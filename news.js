@@ -26,11 +26,11 @@ app.get("/api/scrape/detik",(req,res)=>{
             const html = response.data;
             const $ = cheerio.load(html);
             let detikList = [];
-            $('.m_content li').each(function(i,elm){
+            $('article.list-content__item').each(function(i,elm){
                 detikList[i] = {
-                    judul: $(this).find('h2').text().trim(),
-                    url: $(this).find('a').attr('href'),
-                    publised: $(this).find('.labdate').text().trim()
+                    judul: $(this).find('h3.media__title').text().trim(),
+                    url: $(this).find('h3.media__title > a.media__link').attr('href'),
+                    publised: $(this).find('div.media__date > span').attr('title')
                 }
             });
             // const detikListTrim = detikList.filter(n => n != undefined)
@@ -99,6 +99,33 @@ app.get("/api/scrape/kompas",(req,res)=>{
         }
     }), (error) => console.log(err);
 })
+
+//scrapping inews
+app.get("/api/scrape/inews",(req,res)=>{
+    axions.get('https://www.inews.id/')
+    .then((response)=> {
+        if(response.status === 200){
+            const html = response.data;
+            const $ = cheerio.load(html);
+            let inewsList = [];
+            $('ul#news-list li').each(function(i,elm){
+                inewsList[i] = {
+                    judul: $(this).find('.news-excerpt h4').text().trim(),
+                    url: $(this).find('li a').attr('href'),
+                    publised: $(this).find('div.date').text().trim(),
+                    kategori: $(this).find('div.date > strong').text().trim()  
+                }
+            });
+            
+            res.render("inews",{
+                title: "scraping",
+                inews: inewsList,
+                footer:"copyright 2019"
+            })
+        }
+    }), (error) => console.log(err);
+})
+
 
 //halaman utama
 app.get("/api/scrape/",(req,res)=>{
